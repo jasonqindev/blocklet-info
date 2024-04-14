@@ -10,6 +10,9 @@ import fallback from '@blocklet/sdk/lib/middlewares/fallback';
 
 import logger from './libs/logger';
 import routes from './routes';
+import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+import configs from './utils/config';
 
 dotenv.config();
 
@@ -17,11 +20,18 @@ const { name, version } = require('../../package.json');
 
 export const app = express();
 
+mongoose.connect(configs.connectionStr);
+mongoose.connection.on('error', console.error);
+mongoose.connection.on('connected', () => {
+  console.log('MongoDB connect success');
+});
+
 app.set('trust proxy', true);
 app.use(cookieParser());
 app.use(express.json({ limit: '1 mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1 mb' }));
 app.use(cors());
+app.use(bodyParser.json());
 
 const router = express.Router();
 router.use('/api', routes);

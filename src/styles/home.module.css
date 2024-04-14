@@ -1,0 +1,38 @@
+.page {
+  width: 100vw;
+  min-height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: rgb(245, 248, 250);
+}
+
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  width: 800px;
+  padding: 30px 30px 80px;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-sizing: border-box;
+  box-shadow:
+    rgba(0, 0, 0, 0.05) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.05) 0px 36px 28px -7px,
+    rgba(0, 0, 0, 0.04) 0px 17px 17px -7px;
+  background-color: #fff;
+}
+
+.container .title {
+  margin-bottom: 30px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+}
+
+.btnGroup {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+}

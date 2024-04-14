@@ -1,0 +1,30 @@
+.button {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 170px;
+  height: 50px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  background-color: rgb(76, 110, 245);
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  filter: brightness(1.2);
+}
+
+.button:active {
+  transform: translateY(2px);
+}
+
+.button[disabled] {
+  filter: brightness(0.8);
+  pointer-events: none;
+}

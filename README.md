@@ -1,157 +1,93 @@
-# Getting Started with Create Blocklet
+# Blocklet 测试题
 
-This project was bootstrapped with [Create Blocklet](https://github.com/blocklet/create-blocklet).
+## 前端
 
-This blocklet is a dapp project, which means this is a full-stack application. It's contained both `server` and `client` code.
+#### 介绍
 
-## Launch on Blocklet Server
+前端主要功能是，在页面中实现了用户的用户名、邮箱、手机号的显示，并且可以对这些字段进行修改。并且在输入过程中和提交表单阶段都对表单数据进行了校验。
 
-[![Launch on Blocklet Server](https://assets.arcblock.io/icons/launch_on_blocklet_server.svg)](https://install.arcblock.io/launch?action=blocklet-install&meta_url=https%3A%2F%2Fgithub.com%2Fblocklet%2Fpages-kit%2Freleases%2Fdownload%2Fv0.1.33%2Fblocklet.json)
+**InputField组件验证介绍：**
 
-## File Structure
+支持传入多个验证规则。
 
-- public/ - static files
-  - favicon.ico - favicon
-  - favicon.svg - favicon
-  - index.html - main html file, template for react
-- screenshots/ - Screenshots
-- api/
-  - src/ - Api side code
-    - hooks/ - blocklet lifecycle hooks
-    - libs/ - Api side libraries
-    - middlewares/ - Api side middlewares
-    - routes/ - Api side routes
-    - index.ts - Api side entry point
-- src/ - Client side code (A standard react app structure)
-- .env - Environment variables
-- .env.local - Local environment variables
-- .eslintrc.js - ESLint configuration
-- .gitignore - Git ignore file
-- .prettierrc - Prettier configuration
-- blocklet.md - Blocklet README
-- blocklet.yml - Blocklet configuration
-- LICENSE - License file
-- logo.png - Blocklet logo file
-- package.json - Npm package file
-- README.md - A guide for this blocklet
-- version - Version file
+在当前input失去焦点后，会立马对input字段进行规则校验，如果有错，则提示错误信息，并保存当前的校验规则。
 
-## Development
+当用户在提示错误的input中修改时，会一直都用户的最新input值进行校验，直到通过当前校验规则后，错误提示消失。
 
-1. Make sure you have [@blocklet/cli](https://www.npmjs.com/package/@blocklet/cli) installed
+```typescript
+<InputField
+  onChange={handlePhoneChange}
+  label="手机号"
+  id="phone"
+  value={phone}
+  readOnly={readOnly}
+  validations={[
+    (val) => {
+      if (!val) return '请输入手机号';
+    },
+    (val) => {
+      if (!/^1[3456789]\d{9}$/.test(val)) return '手机号格式不正确(仅支持中国手机号)';
+    },
+  ]}
+/>
+```
 
-   Blocklet needs blocklet server as a dependency. So you need to install it first.
-   `npm install -g @blocklet/cli`
-   See details in [https://developer.blocklet.io/docs/en/quick-start/blocklet-server#use-the-binary-distribution](https://developer.blocklet.io/docs/en/quick-start/blocklet-server#use-the-binary-distribution)
+#### 目录结构
 
-2. Init blocklet server & start blocklet server
+前端项目相关的都放在了/src文件夹下
 
-   Before starting an blocklet server, you need to init blocklet server.
-   `blocklet server init --mode=debug`
-   `blocklet server start`
-   See details in [https://developer.blocklet.io/docs/en/quick-start/blocklet-server](https://developer.blocklet.io/docs/en/quick-start/blocklet-server)
+```bash
+component/  						# 封装的组件
+	Button/          			# 用于提交表单的Button
+		Button.module.css
+		Button.tsx
+	Icon/									# 用于提交表单请求过程中的loading效果
+		Spin.tsx
+	Input/								# 带有表单验证的Input组件
+		InputField.module.css
+		InputField.tsx
+context/
+	user-context.tsx			# context用于全局共享user信息
+pages/
+	home.tsx							# 用户信息页面
+services/
+	http.ts								# 封装了axios请求
+	user.ts								# 获取用户信息，和修改用户信息接口封装
+styles/
+	app.css
+	home.module.css
+types/
+	icon.ts
+	index.d.ts
+```
 
-3. Go to the project directory `cd [name]`
-4. Install dependencies: `npm install` or `yarn`
-5. Start development server: `blocklet dev`
+## 后端
 
-## Bundle
+#### 介绍
 
-After developing a blocklet, you may need to bundle it. Use `npm run bundle` command.
+后端主要功能是，连接远程mongoDB数据库，对外暴露API请求，来操作用户的读取、新增、修改、更新、删除的操作。
 
-## Deploy
+#### 目录结构
 
-- If you want to deploy this blocklet to local blocklet server, you can use `blocklet deploy .blocklet/bundle` command(Make sure the blocklet is bundled before deployment).
-  > Or you can simply use `npm run deploy` command.
-- If you want to deploy this blocklet to remote blocklet server, you can use the command below.
+后端项目相关的都放在了/api/src文件夹下
 
-  ```shell
-  blocklet deploy .blocklet/bundle --endpoint {your blocklet server url} --access-key {blocklet server access key} --access-secret {blocklet server access secret}
-  ```
+```bash
+controller/  						# 业务层处理
+	users.ts							# 在这里处理具体的用户的读取、新增、修改、更新、删除的操作并将结果以json形式返回
+models/
+	users.ts							# 创建users的数据模型，并规定字段
+routes/
+	index.ts							# routes文件夹下存放了对外开放的api接口地址
+utils/
+	config.ts							# config文件中存放了数据库连接相关数据
+	index.ts							# index文件中存放了封装的通用函数，比如成功请求、失败请求
+index.ts
+```
 
-  > Make sure the blocklet is bundled before deployment.
+遵守RestfulAPI规范定义了如下几个接口：
 
-## Upload to blocklet store
-
-- If you want to upload the blocklet to any store for other users to download and use, you can following the following instructions.
-
-  Bump version at first.
-
-  ```shell
-  npm run bump-version
-  ```
-
-  Then config blocklet store url.
-  You can use those store url in below.
-
-  1. [https://store.blocklet.dev/](https://store.blocklet.dev/)
-  2. [https://dev.store.blocklet.dev/](https://dev.store.blocklet.dev/)
-  3. A blocklet store started by yourself.
-     > Make sure you have installed a `blocklet store` on your own blocklet server. Check it on here: [https://store.blocklet.dev/blocklet/z8ia29UsENBg6tLZUKi2HABj38Cw1LmHZocbQ](https://store.blocklet.dev/blocklet/z8ia29UsENBg6tLZUKi2HABj38Cw1LmHZocbQ)
-
-  ```shell
-  blocklet config set store {store url}
-  ```
-
-  Get a `accessToken` by using this command.
-
-  > Why we need a `accessToken`?
-  > A `accessToken` is genrate by blocklet store, which help us upload our blocklet to any store.
-
-  Set `accessToken` to blocklet config
-
-  ```shell
-  blocklet config set accessToken {accessToken}
-  ```
-
-  Upload a new version to a store.
-
-  > Make sure the blocklet is bundled before upload.
-
-  ```shell
-  blocklet upload
-  ```
-
-  Or you can simply use `npm run upload` command.
-
-- You also can upload a new version to a store by Github CI.
-  Bump version at first.
-
-  ```shell
-  npm run bump-version
-  ```
-
-  Push your code to Github main/master branch, or make a pull request to the main/master branch.
-  The CI workflow will automatically upload a new version to a store.
-
-## Q & A
-
-1. Q: How to change a blocklet's name?
-
-   A: Change the `name` field in the `package.json` file, change the `name` field in the `blocklet.yml` file.
-
-   You can also change the `title` field and `description` field in the `blocklet.yml` file.
-
-   Run `blocklet meta` command, you will get a `did` config, copy the `did` value.
-
-   Replace this command `"bundle:client": "PUBLIC_URL='/.blocklet/proxy/{did}' npm run build",` in `package.json`
-
-   Replace `did` field in the `blocklet.yml`
-
-2. Q: How to change a blocklet's logo?
-
-   Change the `logo.png` file root folder.
-
-   Or you can change the `logo` field in the `blocklet.yml` file.
-
-   > Make sure you have added the logo path to the `blocklet.yml` file `files` field.
-
-## Learn More
-
-- Full specification of `blocklet.yml`: [https://github.com/blocklet/blocklet-specification/blob/main/docs/meta.md](https://github.com/blocklet/blocklet-specification/blob/main/docs/meta.md)
-- Full document of Blocklet Server & blocklet development: [https://developer.blocklet.io/docs/en](https://developer.blocklet.io/docs/en)
-
-## License
-
-The code is licensed under the Apache 2.0 license found in the
-[LICENSE](LICENSE) file.
+- 获取全部用户：/api/users **get**
+- 创建用户：/api/users **post**
+- 获取特定用户：/api/users/:id. **get**
+- 更新用户：/api/users/:id **put**
+- 删除用户：/api/users/:id **delete**

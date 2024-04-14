@@ -24,7 +24,7 @@ class UserController {
     }
     const repeatedUser = await Users.findOne({ email });
     if (repeatedUser) {
-      res.status(404).json(failData(404, '邮件已被其他用户使用，请更换邮箱尝试！'));
+      res.status(404).json(failData(404, '邮件已被使用，请更换邮箱尝试！'));
     }
     await new Users(req.body).save();
     res.json(successData());

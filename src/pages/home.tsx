@@ -1,13 +1,25 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import styles from '../styles/home.module.css';
 import Button from '../components/Button/Button.js';
 import InputField from '../components/Input/InputField';
+import { useUser } from '../context/user-context';
+import { updateUserService } from '../services/user';
 
 export default function Home() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+      setEmail(user.email);
+      setPhone(user.phone);
+    }
+  }, [user]);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -21,8 +33,15 @@ export default function Home() {
     setPhone(e.target.value);
   };
 
-  const handleSubmit = () => {
-    console.log(123);
+  const handleSubmit = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      await updateUserService({ ...user, name, email, phone });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -30,7 +30,7 @@ export function validationUser(name: string, email: string, phone: string) {
     return '请输入手机号';
   }
   if (!/^1[3456789]\d{9}$/.test(phone)) {
-    return '手机号格式不正确';
+    return '手机号格式不正确(仅支持中国手机号)';
   }
   return '';
 }

@@ -25,6 +25,6 @@
 }
 
 .button[disabled] {
-  filter: brightness(0.8);
+  background-color: rgb(140 158 229);
   pointer-events: none;
 }

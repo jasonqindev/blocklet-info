@@ -10,8 +10,9 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  const [readOnly, setReadOnly] = useState(true);
 
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   useEffect(() => {
     if (user) {
@@ -35,10 +36,14 @@ export default function Home() {
 
   const handleSubmit = async () => {
     if (!user) return;
+    if (name.length < 2 || name.length > 15) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    if (!/^1[3456789]\d{9}$/.test(phone)) return;
 
     try {
       setLoading(true);
-      await updateUserService({ ...user, name, email, phone });
+      const res = await updateUserService({ ...user, name, email, phone });
+      setUser(res.data);
     } finally {
       setLoading(false);
     }
@@ -49,12 +54,19 @@ export default function Home() {
       <div className={styles.container}>
         <div className={styles.title}>Profile</div>
 
+        <div className={styles.status}>
+          <label htmlFor="status">{readOnly ? '只读' : '编辑'}</label>
+          <input id="status" type="checkbox" checked={readOnly} onChange={() => setReadOnly(!readOnly)} />
+        </div>
+
         <div className={styles.form}>
           <InputField
             label="用户名"
             id="username"
+            name="name"
             value={name}
             onChange={handleNameChange}
+            readOnly={readOnly}
             validations={[
               (val) => {
                 if (!val) return '请输入用户名';
@@ -69,6 +81,7 @@ export default function Home() {
             label="邮箱"
             id="email"
             value={email}
+            readOnly={readOnly}
             validations={[
               (val) => {
                 if (!val) return '请输入邮件';
@@ -83,17 +96,18 @@ export default function Home() {
             label="手机号"
             id="phone"
             value={phone}
+            readOnly={readOnly}
             validations={[
               (val) => {
                 if (!val) return '请输入手机号';
               },
               (val) => {
-                if (!/^1[3456789]\d{9}$/.test(val)) return '手机号格式不正确';
+                if (!/^1[3456789]\d{9}$/.test(val)) return '手机号格式不正确(仅支持中国手机号)';
               },
             ]}
           />
           <div className={styles.btnGroup}>
-            <Button isLoading={loading} onClick={handleSubmit}>
+            <Button disabled={readOnly || !name || !email || !phone} isLoading={loading} onClick={handleSubmit}>
               提交
             </Button>
           </div>

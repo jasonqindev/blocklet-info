@@ -32,10 +32,13 @@ const InputField: FC<InputFieldProps> = ({
 
   useEffect(() => {
     const validation = caughtValidationRef.current;
+
     if (validation) {
       const validated = validation(value);
-      if (!validated) setErrorMessage('');
-      caughtValidationRef.current = null;
+      if (!validated) {
+        setErrorMessage('');
+        caughtValidationRef.current = null;
+      }
     }
   }, [value, errorMessage]);
 

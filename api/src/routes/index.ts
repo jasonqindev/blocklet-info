@@ -1,6 +1,6 @@
-import middleware from '@blocklet/sdk/lib/middlewares';
 import { Router } from 'express';
-const { find, findById, create, update, delete: del } = require('../controller/users');
+
+import { find, findById, create, update, deleteUser } from '../controller/users';
 
 const router = Router();
 
@@ -10,8 +10,8 @@ router.post('/users', create);
 
 router.get('/users/:id', findById);
 
-router.put('/users/:id', middleware.user(), update);
+router.put('/users/:id', update);
 
-router.delete('/users/:id', middleware.user(), del);
+router.delete('/users/:id', deleteUser);
 
 export default router;
